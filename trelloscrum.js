@@ -1,5 +1,5 @@
 /*
-** Scrum for Trello- https://github.com/Q42/TrelloScrum
+** Scrum for Trello- https://github.com/remohammadi/TrelloScrum
 ** Adds Scrum to your Trello
 **
 ** Original:
@@ -16,8 +16,12 @@
 ** Kit Glennon <https://github.com/kitglen>
 ** Samuel Gaus <https://github.com/gausie>
 ** Sean Colombo <https://github.com/seancolombo>
+** Reza Mohammadi <reza@cafebazaar.ir>
 **
 */
+
+
+var DEBUG = true;
 
 // Thanks @unscriptable - http://unscriptable.com/2009/03/20/debouncing-javascript-methods/
 var debounce = function (func, threshold, execAsap) {
@@ -39,6 +43,47 @@ var debounce = function (func, threshold, execAsap) {
 	};
 }
 
+// To correct direction for RTL languages
+var apply_rtl_if_needed = function(event) {
+    var text = $(this).text();
+    var n = text.length;
+
+    var rtl = 0;
+    var ltr = 0;
+    for ( var i = 0; i < n; i ++ ) {
+        var char = text[i];
+	    if ((char >= 'A') && (char <= 'z')) {
+            ltr += 1;
+        } else if ((char >= '؀') && (char <= 'ۿ')) {
+            rtl += 1;
+        } else if ((char >= '׀') && (char <= '״')) {
+            rtl += 1;
+        }
+        if ((rtl + ltr) > 256)
+            break;
+    }
+
+    if (DEBUG) {
+	    console.log("rtl=" + rtl + ", ltr=" + ltr + ", text=" + text);
+    }
+
+    if (rtl > ltr) {
+        $(this).css({
+            direction: "rtl"
+        });
+    } else {
+        $(this).css({
+            direction: "ltr"
+        });
+    }
+};
+
+var fixDirections = debounce(function() {
+    $('.markeddown').each(apply_rtl_if_needed);
+    $('.window-title-text').each(apply_rtl_if_needed);
+    $('.list-card-title').each(apply_rtl_if_needed);
+}, 500, false);
+
 // For MutationObserver
 var obsConfig = { childList: true, characterData: true, attributes: false, subtree: true };
 
@@ -53,7 +98,7 @@ var SETTING_NAME_LINK_STYLE = "burndownLinkStyle";
 var SETTING_NAME_ESTIMATES = "estimatesSequence";
 var S4T_ALL_SETTINGS = [SETTING_NAME_LINK_STYLE, SETTING_NAME_ESTIMATES];
 var S4T_SETTING_DEFAULTS = {};
-S4T_SETTING_DEFAULTS[SETTING_NAME_LINK_STYLE] = 'full';
+S4T_SETTING_DEFAULTS[SETTING_NAME_LINK_STYLE] = 'none';
 S4T_SETTING_DEFAULTS[SETTING_NAME_ESTIMATES] = _pointSeq.join();
 refreshSettings(); // get the settings right away (may take a little bit if using Chrome cloud storage)
 
@@ -117,13 +162,17 @@ $(function(){
 	function updateFilters() {
 		setTimeout(calcListPoints);
 	};
-	$('.js-toggle-label-filter, .js-select-member, .js-due-filter, .js-clear-all').live('mouseup', calcListPoints);
-	$('.js-input').live('keyup', calcListPoints);
-	$('.js-share').live('mouseup',function(){
+    content = $('#content');
+    content.delegate('.js-toggle-label-filter, .js-select-member, .js-due-filter, .js-clear-all', 'mouseup', calcListPoints);
+    content.delegate('.js-input', 'keyup', calcListPoints);
+    content.delegate('.js-share', 'mouseup', function(){
 		setTimeout(checkExport,500)
 	});
 
+    $('head').append($("<style>.markeddown ul, .markeddown ol {margin: 4px 25px 16px}</style>"));
+
 	calcListPoints();
+    fixDirections();
 });
 
 // Recalculates every card and its totals (used for significant DOM modifications).
@@ -175,6 +224,7 @@ var recalcTotalsObserver = new CrossBrowser.MutationObserver(function(mutations)
 	} else if(refreshJustTotals){
 		calcListPoints();
 	}
+    fixDirections();
     
     $editControls = $(".card-detail-title .edit-controls");
     if($editControls.length > 0)
@@ -184,8 +234,8 @@ var recalcTotalsObserver = new CrossBrowser.MutationObserver(function(mutations)
 });
 recalcTotalsObserver.observe(document.body, obsConfig);
 
-// Refreshes the link to the Burndown Chart dialog.
-function updateBurndownLink(){
+// Refreshes the links on the Toolbar
+function updateToolbar(){
     // Add the link for Burndown Charts
     //$('.s4tLink').remove();
     if($('.s4tLink').length === 0){
@@ -454,7 +504,7 @@ function computeTotal(){
 			$total.append(scoreSpan);
 		}
         
-        updateBurndownLink(); // the burndown link and the total are on the same bar... so now they'll be in sync as to whether they're both there or not.
+        updateToolbar();
 	});
 };
 
@@ -877,7 +927,7 @@ function onSettingsUpdated(){
 	
 	// Refresh the links because link-settings may have changed.
 	$('.s4tLink').remove();
-	updateBurndownLink();
+	updateToolbar();
 } // end onSettingsUpdated()
 
 /**

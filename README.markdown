@@ -37,4 +37,4 @@ Great improvements made by @nicpottier and @paullofte:
 * Added support for Zero Point Cards (0), Unknown Point Cards (?), Decimal Value Cards (.5)
 * In addition I added the functionality to have the list total reflect the current filtered set of cards.
 
-
+RTL injection and other Bazaar customizations are added by [Reza Mohammadi](http://teeleh.ir/).
