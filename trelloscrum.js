@@ -21,7 +21,7 @@
 */
 
 
-var DEBUG = true;
+var DEBUG = false;
 
 // Thanks @unscriptable - http://unscriptable.com/2009/03/20/debouncing-javascript-methods/
 var debounce = function (func, threshold, execAsap) {
