@@ -169,7 +169,7 @@ $(function(){
 		setTimeout(checkExport,500)
 	});
 
-    $('head').append($("<style>.markeddown ul, .markeddown ol {margin: 4px 25px 16px}</style>"));
+    $('head').append($("<style>.markeddown ul>li {margin: 0 24px 8px;}</style>"));
 
 	calcListPoints();
     fixDirections();

@@ -1,6 +1,6 @@
 {
 	"name": "Bazaar Scrum for Trello",
-	"version": "2.0",
+	"version": "2.0.1",
 	"description": "Adds Scrum to your Trello",
 	"content_scripts": [
 		{
