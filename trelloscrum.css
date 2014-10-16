@@ -6,11 +6,14 @@
 	margin: 1px 0px 0 0;
 	line-height:18px;
 }
-.board-header-btns .list-total{ /* only targets the board totals */
+.board-header-btns .list-total { /* only targets the board totals */
 	line-height:30px;
-	color: #60c5f0;
+	color: #400080;
 }
 
+.list-total .points{
+	opacity: 0.8;
+}
 .list-total .cpoints{
 	margin-right:3px;
 	opacity: 0.5;
@@ -79,9 +82,6 @@
 	opacity: 0.5;
 }
 
-/* == b4t integration==*/
-#burndownLink .icon-sm{
-    padding:6px;
-    margin-top:1px;
+div.kanban-overflow {
+  background-color: #F00;
 }
-/* == end b4t integration == */
